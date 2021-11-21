@@ -4,6 +4,7 @@
   "description": "Telegram bot that alerts whenever the price of Xiaomi Mi Eletric Scooter 3 changes",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/freitzzz/telegram-mi-scooter-3-price-alert/issues"
   },
-  "homepage": "https://github.com/freitzzz/telegram-mi-scooter-3-price-alert#readme"
+  "homepage": "https://github.com/freitzzz/telegram-mi-scooter-3-price-alert#readme",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "jsdom": "^18.1.0",
+    "telegraf": "^4.4.2"
+  }
 }
