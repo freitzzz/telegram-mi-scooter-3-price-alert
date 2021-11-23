@@ -104,9 +104,9 @@ function scrape_value_from_auchan(document) {
     return value_not_found;
 }
 
-function cancel_throw(func) {
+async function cancel_throw(func) {
     try {
-        return func();
+        return await func();
     } catch (error) {
         return error;
     }
@@ -196,11 +196,24 @@ function health_check_callback(context) {
 
 }
 
+function hooked_check_callback(context) {
+
+    const chat_id = context.message.chat.id;
+
+    if (chat_ids.includes(chat_id)) {
+        context.reply('✅ You\'re subscribed to the bot.');
+    } else {
+        context.reply('❌ You\'re not subscribed to the bot.');
+    }
+}
+
 bot.start(telegram_start_callback);
 
 bot.command('current', telegram_current_price_callback);
 
 bot.command('health', health_check_callback);
+
+bot.command('hooked', hooked_check_callback);
 
 bot.launch();
 
