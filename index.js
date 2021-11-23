@@ -1,8 +1,11 @@
 const axios = require('axios').default;
 const jsdom = require('jsdom');
 const telegraf = require('telegraf');
+const fs = require('fs');
 
 const value_not_found = undefined;
+
+const backup_chat_ids_file_path = 'backup.chat.ids.json';
 
 const sources = [
     { 'name': 'Mi Store Portugal', 'url': 'https://mistoreportugal.pt/pt/produtos/trotinete-xiaomi-mi-electric-scooter-3', 'scrape_callback': scrape_value_from_mistore_portugal, 'price': 0.0 },
@@ -14,7 +17,7 @@ const sources = [
     { 'name': 'Auchan', 'url': 'https://www.auchan.pt/pt/tecnologia-e-eletrodomesticos/tecnologia/eco-mobilidade/trotinetes/trotinete-xiaomi-mi-electric-scooter-3-preta/3374630.html', 'scrape_callback': scrape_value_from_auchan, 'price': 0.0 },
 ];
 
-const chat_ids = [];
+let chat_ids = [];
 
 const bot = new telegraf.Telegraf(process.env.BOT_TOKEN);
 
@@ -168,14 +171,46 @@ async function periodic_fetch_and_update() {
 
 }
 
+function init_backup_chat_ids() {
+
+    if (fs.existsSync(backup_chat_ids_file_path)) {
+        const backup_chat_ids = JSON.parse(fs.readFileSync(backup_chat_ids_file_path).toString());
+
+        chat_ids.push(...backup_chat_ids);
+    }
+}
+
+function internal_notify_subscribed_chat_ids() {
+    fs.writeFileSync(backup_chat_ids_file_path, JSON.stringify(chat_ids));
+}
+
+
 function telegram_start_callback(context) {
 
     const chat_id = context.message.chat.id;
 
     if (!chat_ids.includes(chat_id)) {
         chat_ids.push(chat_id);
+
+        internal_notify_subscribed_chat_ids();
+
+        context.reply('ℹ️ You\'ve subscribed bot notifications!');
+
+    } else {
+        context.reply('ℹ️ You\'re already subscribed.');
     }
 
+}
+
+function stop_callback(context) {
+
+    const chat_id = context.message.chat.id;
+
+    chat_ids = chat_ids.filter((x) => x == chat_id);
+
+    internal_notify_subscribed_chat_ids();
+
+    context.reply('ℹ️ You\'ve unsubscribed bot notifications!');
 }
 
 function telegram_current_price_callback(context) {
@@ -207,6 +242,8 @@ function hooked_check_callback(context) {
     }
 }
 
+init_backup_chat_ids();
+
 bot.start(telegram_start_callback);
 
 bot.command('current', telegram_current_price_callback);
@@ -214,6 +251,8 @@ bot.command('current', telegram_current_price_callback);
 bot.command('health', health_check_callback);
 
 bot.command('hooked', hooked_check_callback);
+
+bot.command('stop', stop_callback);
 
 bot.launch();
 
