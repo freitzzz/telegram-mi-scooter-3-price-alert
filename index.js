@@ -15,6 +15,7 @@ const sources = [
     { 'name': 'Rádio Popular', 'url': 'https://www.radiopopular.pt/produto/trotinete-xiaomi-mi-3-cinza?utm_source=kuantokusta&utm_medium=cpc&utm_campaign=catalogo', 'scrape_callback': scrape_value_from_radiopopular, 'price': 0.0 },
     { 'name': 'El Corte Ingles', 'url': 'https://www.elcorteingles.pt/feed/A40922295/?utm_campaign=catalogo-kuantokusta&utm_source=kuantokusta&utm_medium=comparador', 'scrape_callback': scrape_value_from_elcorteingles, 'price': 0.0 },
     { 'name': 'Auchan', 'url': 'https://www.auchan.pt/pt/tecnologia-e-eletrodomesticos/tecnologia/eco-mobilidade/trotinetes/trotinete-xiaomi-mi-electric-scooter-3-preta/3374630.html', 'scrape_callback': scrape_value_from_auchan, 'price': 0.0 },
+    { 'name': 'Tek4life', 'url': 'https://www.tek4life.pt/pt/trotinete-electrica-xiaomi-mi-electric-scooter-3-gravity-grey', 'scrape_callback': scrape_value_from_tek4life, 'price': 0.0 },
 ];
 
 let chat_ids = [];
@@ -102,6 +103,17 @@ function scrape_value_from_auchan(document) {
                 return parseFloat(elements[i].attributes[1].value.replace(',', '.'));
             }
         }
+    }
+
+    return value_not_found;
+}
+
+// https://www.tek4life.pt/pt/trotinete-electrica-xiaomi-mi-electric-scooter-3-gravity-grey
+function scrape_value_from_tek4life(document) {
+    const element = document.getElementById('product-price-24474');
+
+    if (element) {
+        return parseFloat(element.innerHTML.substring(0, 6).replace(',', '.'));
     }
 
     return value_not_found;

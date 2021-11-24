@@ -180,4 +180,6 @@ dist
 # Support for Project snippet scope
 !.vscode/*.code-snippets
 
+backup.chat.ids.json
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,node
